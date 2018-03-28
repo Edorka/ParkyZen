@@ -1,0 +1,2 @@
+pycrypto==2.6.1
+git+https://github.com/Edorka/blockpy
