@@ -1,7 +1,7 @@
 from node import Node
 from node.server import app, NodeServerHandler
 from api.server import may_fail, InvalidResource, ResourceNotFound
-from block import GenesisBlock
+from block import Block, GenesisBlock
 from os import environ
 
 
