@@ -23,7 +23,7 @@ class SubscribeView extends Component {
   handleClick = () => {
     console.log('trying to subscribe', this);
     const account = this.props.account;
-    return account.subscribe(this.state.plate);
+    return account.subscribe(this.state.plate).then(this.props.onSubscribe);
   }
   plateChanged = (event) => {
     const plate = event.target.value;

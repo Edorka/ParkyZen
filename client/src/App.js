@@ -13,11 +13,6 @@ const styles = theme => ({
   root: {
     flexGrow: 1,
   },
-  paper: {
-    padding: theme.spacing.unit * 2,
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  },
 });
 
 class App extends Component {
@@ -26,7 +21,6 @@ class App extends Component {
     this.account = new Account();
     this.state = {
       subscribed: false,
-      values: [1,2,3].map( (i) => <a key={i}>{i}</a>)
     };
   }
   componentDidMount() {
@@ -40,12 +34,10 @@ class App extends Component {
             app.openSubscribe();
         });
   }
-  openSubscribe() {
-    console.log('to subscribe');
+  openSubscribe = () => {
     this.setState((state) => ({subscribed: false}));
   }
-  openChat() {
-    console.log('to chat');
+  openChat = () => {
     this.setState((state) => ({subscribed: true}));
   }
   render() {

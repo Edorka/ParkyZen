@@ -17,19 +17,18 @@ export class Account {
     }
     subscribe(plate) {
         this.plate = plate;
-        this.cypherKey.generate()
+        return this.cypherKey.generate()
             .then((keyPair) =>  {
-                crypto.subtle.exportKey('jwk', keyPair.publicKey)
-                    .then(this.submitSubcription);
-
+                return crypto.subtle.exportKey('jwk', keyPair.publicKey)
+                    .then(this.submitSubcription)
+                        .then(this.cypherKey.save);
             });
+
     }
 
 }
 
 export class CypherKey {
-
-
     constructor() {
         this.key = null;
     }
@@ -50,7 +49,12 @@ export class CypherKey {
             }
         });
     }
+    save(keys) {
+        localStorage.setItem('cypher-key', keys);
+        console.log('saved keys.');
+    }
     generate(extractable=true) {
+        const provider = this;
         return window.crypto.subtle.generateKey(
             {
                 name: "ECDH",
@@ -59,11 +63,8 @@ export class CypherKey {
             extractable, //whether the key is extractable (i.e. can be used in exportKey)
             ["deriveKey", "deriveBits"] //can be any combination of "deriveKey" and "deriveBits"
         )
-        .then(function(key){
-            //returns a keypair object
-            //console.log(key);
-            //console.log(key.publicKey);
-            //console.log(key.privateKey);
+        .then((key) => {
+            provider.key = key;
             return key;
         })
         .catch(function(error){
