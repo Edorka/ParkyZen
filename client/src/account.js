@@ -4,32 +4,51 @@ export class Account {
     constructor() {
         this.plate = null;
         this.cypherKey = new CypherKey();
+        this.signerKey = new SignerKey();
     }
-    getKey() {
-        return this.cypherKey;
+    getKeys() {
+        return {
+            cypher: this.cypherKey,
+            signer: this.signerKey,
+        };
     }
-    submitSubcription = (publicKey) => {
+    submitSubcription = ([publicCypher, publicSigner]) => {
         const subscription = {
             'plate': this.plate,
-            'pub_key': publicKey
+            'pub_key_cypher': publicCypher,
+            'pub_key_signer': publicSigner
         };
         return send(subscription, 'users/me');
     }
     subscribe(plate) {
         this.plate = plate;
-        return this.cypherKey.generate()
-            .then((keyPair) =>  {
-                return crypto.subtle.exportKey('jwk', keyPair.publicKey)
+        const keysGeneration = Promise.all([
+                this.cypherKey.generate(), 
+                this.signerKey.generate()
+        ]);
+        const exportPublibKeys = ([cypher, signer]) => {
+            console.log('cypher', cypher, 'signer', signer);
+            return Promise.all([
+                crypto.subtle.exportKey('jwk', cypher.publicKey),
+                crypto.subtle.exportKey('jwk', signer.publicKey),
+            ]);
+        }
+        const saveKeys = () => {
+            return Promise.all([this.cypherKey.save(), this.signerKey.save()]);
+        }
+        const generateSubmitAndSave = new Promise((resolve, reject) => {
+            keysGeneration
+                .then(exportPublibKeys)
                     .then(this.submitSubcription)
-                        .then(this.cypherKey.save);
-            });
-
+                        .then(saveKeys);
+        });
+        return generateSubmitAndSave;
     }
-
 }
 
-export class CypherKey {
-    constructor() {
+export class Key {
+    constructor(denomination='unknown-key') {
+        this.denomination = denomination;
         this.key = null;
     }
     ready() {
@@ -39,9 +58,10 @@ export class CypherKey {
                 return this.generate();
             });
     }
-    load() {
+    load = () => {
+        const key = this;
         return new Promise(function(resolve, reject){
-            const stored = localStorage.getItem('cypher-key');
+            const stored = localStorage.getItem(key.denomination);
             if ( stored !== null ) {
                 resolve(stored);
             } else {
@@ -49,9 +69,28 @@ export class CypherKey {
             }
         });
     }
-    save(keys) {
-        localStorage.setItem('cypher-key', keys);
-        console.log('saved keys.');
+    save = () => {
+        console.log(this.key);
+        const target = this.key.privateKey;
+        return window.crypto.subtle.exportKey('jwk', target)
+            .then((exportedKey) => {
+                localStorage.setItem(this.denomination, exportedKey);
+                console.log('saved key.', this.denomination, exportedKey);
+            });
+    }
+    generate(extractable=true) {
+        throw Error('Not Implemented'); 
+    }
+    import(data){
+        const provider = this;
+        return window.crypto.subtle.import('jwk', data)
+            .then((key) => { provider.key = key });
+    }
+}
+
+export class CypherKey extends Key {
+    constructor() {
+        super('cypher-key');
     }
     generate(extractable=true) {
         const provider = this;
@@ -60,8 +99,8 @@ export class CypherKey {
                 name: "ECDH",
                 namedCurve: "P-256", //can be "P-256", "P-384", or "P-521"
             },
-            extractable, //whether the key is extractable (i.e. can be used in exportKey)
-            ["deriveKey", "deriveBits"] //can be any combination of "deriveKey" and "deriveBits"
+            extractable, 
+            ["deriveKey", "deriveBits"] 
         )
         .then((key) => {
             provider.key = key;
@@ -73,4 +112,29 @@ export class CypherKey {
         });   
     }
 
+}
+
+export class SignerKey extends Key {
+    constructor() {
+        super('signer-key');
+    }
+    generate(extractable=true) {
+        const provider = this;
+        return window.crypto.subtle.generateKey(
+            {
+                name: "ECDSA",
+                namedCurve: "P-256", //can be "P-256", "P-384", or "P-521"
+            },
+            extractable, 
+            ["sign", "verify"] //can be any combination of "sign" and "verify"
+        )
+        .then((key) => {
+            provider.key = key;
+            return key;
+        })
+        .catch(function(error){
+            console.error(error);
+            return error;
+        });   
+    }
 }

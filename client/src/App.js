@@ -25,8 +25,9 @@ class App extends Component {
   }
   componentDidMount() {
     const app = this;
-    const provider = this.account.getKey();
-    provider.load()
+    const keys = this.account.getKeys();
+    const keysLoad = Promise.all([keys.cypher.load(), keys.signer.load()])
+    keysLoad
         .then((key) => {
             app.openChat();    
         })
