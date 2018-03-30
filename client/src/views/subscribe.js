@@ -1,15 +1,7 @@
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import Grid from 'material-ui/Grid';
-
 import React, { Component } from 'react';
-import { withStyles } from 'material-ui/styles';
-
-
-const plateInputStyle = {
-    fontSize: '2.15em',
-    color: 'red'
-  };
 
 
 class SubscribeView extends Component {
@@ -47,7 +39,6 @@ class SubscribeView extends Component {
                     margin="normal"
                     value={this.state.plate}
                     onChange={this.plateChanged}
-                    style={plateInputStyle}
                 />
             </Grid>
             <Grid item xs={12}>
@@ -62,4 +53,4 @@ class SubscribeView extends Component {
   }
 }
 
-export default withStyles(plateInputStyle)(SubscribeView);
+export default SubscribeView;

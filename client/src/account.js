@@ -27,7 +27,6 @@ export class Account {
                 this.signerKey.generate()
         ]);
         const exportPublibKeys = ([cypher, signer]) => {
-            console.log('cypher', cypher, 'signer', signer);
             return Promise.all([
                 crypto.subtle.exportKey('jwk', cypher.publicKey),
                 crypto.subtle.exportKey('jwk', signer.publicKey),
