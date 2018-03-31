@@ -23,8 +23,8 @@ export class Account {
     subscribe(plate) {
         this.plate = plate;
         const keysGeneration = Promise.all([
-                this.cypherKey.generate(), 
-                this.signerKey.generate()
+            this.cypherKey.generate(), 
+            this.signerKey.generate()
         ]);
         const exportPublibKeys = ([cypher, signer]) => {
             return Promise.all([
@@ -36,12 +36,16 @@ export class Account {
             return Promise.all([this.cypherKey.save(), this.signerKey.save()]);
         }
         const generateSubmitAndSave = new Promise((resolve, reject) => {
-            keysGeneration
+            return keysGeneration
                 .then(exportPublibKeys)
                     .then(this.submitSubcription)
-                        .then(saveKeys);
+                        .then(saveKeys)
+                            .then(resolve).catch(reject);
         });
         return generateSubmitAndSave;
+    }
+    getBlocks() {
+        return get({'plate': this.plate, 'from_indexb': 1}, 'blocks');
     }
 }
 
@@ -75,6 +79,7 @@ export class Key {
             .then((exportedKey) => {
                 localStorage.setItem(this.denomination, exportedKey);
                 console.log('saved key.', this.denomination, exportedKey);
+                return exportedKey;
             });
     }
     generate(extractable=true) {

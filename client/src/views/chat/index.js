@@ -13,10 +13,11 @@ const styles = theme => ({
 
 class ChatView extends Component {
   render() {
+    const blocksSource = this.props.account.getBlocks;
     return (
         <div className="column" >
             <div className="row extended" style={{overflow: 'auto'}}>
-                <Feed source={this.props.source} />
+                <Feed source={blocksSource} />
             </div>
             <div className="row" >
                 <Compose target={this.props.target} />

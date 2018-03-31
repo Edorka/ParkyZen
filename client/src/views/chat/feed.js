@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import List, { ListItem, ListItemText } from 'material-ui/List';
+import { get } from '../../api';
 
 
 class Feed extends Component {
     constructor(props) {
         super(props);
-        this.messages = [];   
+        this.messages = [];
     }
     render() {
         const sectionId = "feed";

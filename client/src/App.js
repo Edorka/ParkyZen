@@ -59,13 +59,13 @@ class App extends Component {
                 </AppBar>
             </div>
             <div className="row extended padded" >
-            { this.state.subscribed
-                ? <ChatView 
-                    account={app.account} />
-                : <SubscribeView 
-                    account={app.account} 
-                    onSubscribe={app.openChat} />
-            }
+                { this.state.subscribed
+                    ? <ChatView 
+                        account={app.account} />
+                    : <SubscribeView 
+                        account={app.account} 
+                        onSubscribe={app.openChat} />
+                }
             </div>
           </div>
       </div>

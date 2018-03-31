@@ -14,7 +14,9 @@ class SubscribeView extends Component {
   handleClick = () => {
     console.log('trying to subscribe', this);
     const account = this.props.account;
-    return account.subscribe(this.state.plate).then(this.props.onSubscribe);
+    return account
+        .subscribe(this.state.plate)
+            .then(this.props.onSubscribe);
   }
   plateChanged = (event) => {
     const plate = event.target.value;
@@ -28,7 +30,6 @@ class SubscribeView extends Component {
     return (
         <div className="column extended">
             <div className="row">
-
                 <TextField
                     id="new-plate"
                     label="Plate number"
