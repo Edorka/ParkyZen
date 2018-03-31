@@ -11,22 +11,22 @@ class Compose extends Component {
         return (
             <Grid container 
                 spacing={8} 
-                alignItems="center"
+                alignItems="stretch"
                 direction="column"
                 justify="center">
-            <TextField
-                fullWidth={true}
-                id="new-plate"
-                label="Plate number"
-                margin="normal"/>
-            <TextField
-                fullWidth={true}
-                id="new-plate"
-                label="Message"
-                margin="normal"/>
-            <Button variant="raised" color="primary" >
-              Subscribe
-            </Button>        
+                <TextField
+                    fullWidth={true}
+                    id="new-plate"
+                    label="Plate number"
+                    margin="normal"/>
+                <TextField
+                    fullWidth={true}
+                    id="new-plate"
+                    label="Message"
+                    margin="normal"/>
+                <Button variant="raised" color="primary" >
+                  Subscribe
+                </Button>        
             </Grid>
            )
     }

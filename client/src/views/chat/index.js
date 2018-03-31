@@ -6,7 +6,9 @@ import { withStyles } from 'material-ui/styles';
 
 
 const styles = theme => ({
-    overflowX: 'hidden'
+    root: {
+        width: '100%'
+    }
 });
 
 
@@ -17,13 +19,13 @@ class ChatView extends Component {
             <Grid container 
                 className={classes.root}
                 spacing={8} 
-                alignItems="center"
+                alignItems="stretch"
                 direction="column"
                 justify="center">
-                <Grid item xs={12} style={{overflow: 'auto'}}>
+                <Grid item xs={12} id="feed-container" style={{overflow: 'auto'}}>
                     <Feed source={this.props.source} />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={4} id="feed-container">
                     <Compose target={this.props.target} />
                 </Grid>
             </Grid>

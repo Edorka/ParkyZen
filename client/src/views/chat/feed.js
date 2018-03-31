@@ -11,7 +11,7 @@ class Feed extends Component {
         const sectionId = "feed";
         const messages = this.messages;
         return (
-            <div>    
+            <div id="feed">    
             { 
             messages.length === 0 
                 ? <h5 className="centered">No messages</h5>
