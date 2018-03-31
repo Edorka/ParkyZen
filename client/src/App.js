@@ -9,13 +9,13 @@ import Toolbar from 'material-ui/Toolbar';
 import Typography from 'material-ui/Typography';
 
 
-const styles = theme => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    flexShrink: 0
-  },
-});
+const styles = {
+    root: {
+        flexGrow: 1,
+        display: 'flex',
+        flexFlow: 'column',
+    },
+};
 
 class App extends Component {
   constructor(props) {
@@ -47,21 +47,27 @@ class App extends Component {
     const app = this;
     const { classes } = this.props;
     return (
-      <div className={classes.root} >
-        <AppBar position="static" color="default" style={{flex: 0}}> 
-            <Toolbar>
-                <Typography variant="title" color="inherit">
-                    ParkyZen
-                </Typography>
-            </Toolbar>
-        </AppBar>
-        { this.state.subscribed
-            ? <ChatView 
-                account={app.account} />
-            : <SubscribeView 
-                account={app.account} 
-                onSubscribe={app.openChat} />
-        }
+      <div className={classes.root}>
+        <div className="column">
+            <div className="row">
+                <AppBar position="static" color="default" style={{flex: 0}}> 
+                    <Toolbar>
+                        <Typography variant="title" color="inherit">
+                            ParkyZen
+                        </Typography>
+                    </Toolbar>
+                </AppBar>
+            </div>
+            <div className="row extended padded" >
+            { this.state.subscribed
+                ? <ChatView 
+                    account={app.account} />
+                : <SubscribeView 
+                    account={app.account} 
+                    onSubscribe={app.openChat} />
+            }
+            </div>
+          </div>
       </div>
     );
   }

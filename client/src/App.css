@@ -1,23 +1,36 @@
 html, body, #root {
-    height: 100%;
     width: 100%;
 }
 
-.App {
-  text-align: center;
-  display: flex;
+#root {
+    display: flex;
+    height: 100vh;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+.App-content{
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+.column{
+    flex-grow: 1;
+    display: flex;
+    flex-flow: column;
+}
+.column.reversed{
+    flex-flow: column-reverse;
+}
+.column .row.extended{
+    flex: 1;
+    display: flex;
+}
+.column .row.bottom{
+    align-self: flex-end;
+}
+.row.padded, .column.padded {
+    padding: 0.2em 0.5em;
 }
 
-.App-header {
-  background-color: #222;
-  padding: 20px;
-  color: white;
-}
 
 .App-title {
   font-size: 1.5em;

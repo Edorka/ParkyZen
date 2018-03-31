@@ -1,6 +1,5 @@
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
-import Grid from 'material-ui/Grid';
 import React, { Component } from 'react';
 
 
@@ -27,28 +26,27 @@ class SubscribeView extends Component {
   }
   render() {
     return (
-        <Grid container 
-            spacing={24} 
-            alignItems="center"
-            direction="column"
-            justify="center">
-            <Grid item xs={12}>
+        <div className="column extended">
+            <div className="row">
+
                 <TextField
                     id="new-plate"
                     label="Plate number"
                     margin="normal"
+                    fullWidth={true}
                     value={this.state.plate}
                     onChange={this.plateChanged}
                 />
-            </Grid>
-            <Grid item xs={12}>
+            </div>
+            <div className="row">
                 <Button variant="raised" color="primary"
+                    fullWidth={true}
                     onClick={this.handleClick} 
                     disabled={this.state.valid !== true} >
                   Subscribe
                 </Button>        
-            </Grid>
-        </Grid>
+            </div>
+        </div>
     )
   }
 }

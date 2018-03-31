@@ -1,19 +1,12 @@
 import React, { Component } from 'react';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
-import Grid from 'material-ui/Grid';
-import { withStyles } from 'material-ui/styles';
 
 
 class Compose extends Component {
     render() {
-        const { classes } = this.props;
         return (
-            <Grid container 
-                spacing={8} 
-                alignItems="stretch"
-                direction="column"
-                justify="center">
+            <div className="column">
                 <TextField
                     fullWidth={true}
                     id="new-plate"
@@ -25,9 +18,9 @@ class Compose extends Component {
                     label="Message"
                     margin="normal"/>
                 <Button variant="raised" color="primary" >
-                  Subscribe
+                  Send
                 </Button>        
-            </Grid>
+            </div>
            )
     }
 }

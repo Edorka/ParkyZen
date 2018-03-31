@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Feed from './feed';
 import Compose from './compose';
-import Grid from 'material-ui/Grid';
 import { withStyles } from 'material-ui/styles';
 
 
@@ -14,21 +13,15 @@ const styles = theme => ({
 
 class ChatView extends Component {
   render() {
-    const { classes } = this.props;
     return (
-            <Grid container 
-                className={classes.root}
-                spacing={8} 
-                alignItems="stretch"
-                direction="column"
-                justify="center">
-                <Grid item xs={12} id="feed-container" style={{overflow: 'auto'}}>
-                    <Feed source={this.props.source} />
-                </Grid>
-                <Grid item xs={4} id="feed-container">
-                    <Compose target={this.props.target} />
-                </Grid>
-            </Grid>
+        <div className="column" >
+            <div className="row extended" style={{overflow: 'auto'}}>
+                <Feed source={this.props.source} />
+            </div>
+            <div className="row" >
+                <Compose target={this.props.target} />
+            </div>
+        </div>
         )
   }
   load() {
