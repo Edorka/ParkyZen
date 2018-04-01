@@ -11,9 +11,9 @@ export function send(data, endpoint='') {
   });
 }
 
-const concat = (result, key, value) => {
-    const join = (result.length > 0) ? '?' : '&';
-    return `${join}${key}=${encodeURIComponent(value)}`;
+const concat = (previous, key, value) => {
+    const join = (previous.length === 0) ? '?' : '&';
+    return `${previous}${join}${key}=${encodeURIComponent(value)}`;
 };
 
 function toURL(parameters){
@@ -31,4 +31,37 @@ export function get(parameters=null, endpoint=''){
             'Content-Type': 'application/json',
         }
     });
+}
+
+export class MessageInput {
+    constructor(account) {
+        this.account = account;
+        this.subscribers = []; 
+        this.index = 0;
+        this.plate = account.plate;
+    }
+    load() {
+        const subscribers = this.subscribers;
+        return get({'plate': this.plate, 'from_index': this.index}, 'messages')
+            .then(res => res.json())
+                .then((result) => {
+                    subscribers.forEach((subscriber) => subscriber(result));
+                });
+    }
+    feed(callback) {
+        this.subscribers.push(callback);
+    }
+    start(delay=500) {
+        let income = this;
+        this.timeout = window.setTimeout(()=>{
+            income.load();
+        }, delay);
+    }
+}
+
+export class MessageOutput {
+    constructor(account) {
+        this.account = account;
+    
+    }
 }

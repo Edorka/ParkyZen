@@ -1,51 +1,29 @@
 import React, { Component } from 'react';
 import Feed from './feed';
+import { MessageInput, MessageOutput } from '../../api';
 import Compose from './compose';
-import { withStyles } from 'material-ui/styles';
-
-
-const styles = theme => ({
-    root: {
-        width: '100%'
-    }
-});
-
 
 class ChatView extends Component {
+  constructor(props) {
+    super(props);
+    const account = this.props.account;
+    this.income = new MessageInput(account);
+    this.output = new MessageOutput(account);
+  }
   render() {
-    const blocksSource = this.props.account.getBlocks;
+    const chat = this;
     return (
         <div className="column" >
             <div className="row extended" style={{overflow: 'auto'}}>
-                <Feed source={blocksSource} />
+                <Feed source={chat.income} />
             </div>
             <div className="row" >
-                <Compose target={this.props.target} />
+                <Compose target={chat.output} />
             </div>
         </div>
         )
   }
-  load() {
-    fetch('http://localhost:8080/blocks')
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState({
-            isLoaded: true,
-            items: result.items
-          });
-        },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error
-          });
-        }
-      )
-  }
+  
 }
 
-export default withStyles(styles)(ChatView);
+export default ChatView;

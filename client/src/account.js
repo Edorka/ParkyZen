@@ -1,8 +1,8 @@
-import {send} from './api.js';
+import {send, get} from './api.js';
 
 export class Account {
     constructor() {
-        this.plate = null;
+        this.plate = localStorage.getItem('plate');
         this.cypherKey = new CypherKey();
         this.signerKey = new SignerKey();
     }
@@ -20,6 +20,10 @@ export class Account {
         };
         return send(subscription, 'users/me');
     }
+    save = () => {
+        localStorage.setItem('plate', this.plate);
+        return Promise.all([this.cypherKey.save(), this.signerKey.save()]);
+    }
     subscribe(plate) {
         this.plate = plate;
         const keysGeneration = Promise.all([
@@ -32,20 +36,14 @@ export class Account {
                 crypto.subtle.exportKey('jwk', signer.publicKey),
             ]);
         }
-        const saveKeys = () => {
-            return Promise.all([this.cypherKey.save(), this.signerKey.save()]);
-        }
         const generateSubmitAndSave = new Promise((resolve, reject) => {
             return keysGeneration
                 .then(exportPublibKeys)
                     .then(this.submitSubcription)
-                        .then(saveKeys)
+                        .then(this.save)
                             .then(resolve).catch(reject);
         });
         return generateSubmitAndSave;
-    }
-    getBlocks() {
-        return get({'plate': this.plate, 'from_indexb': 1}, 'blocks');
     }
 }
 
@@ -73,7 +71,6 @@ export class Key {
         });
     }
     save = () => {
-        console.log(this.key);
         const target = this.key.privateKey;
         return window.crypto.subtle.exportKey('jwk', target)
             .then((exportedKey) => {
