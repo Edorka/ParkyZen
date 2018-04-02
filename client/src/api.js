@@ -62,6 +62,13 @@ export class MessageInput {
 export class MessageOutput {
     constructor(account) {
         this.account = account;
-    
+    }
+    send(content='', recipient=null) {
+        const message = {
+            'to': recipient,
+            'content': content,
+            'from': this.plate
+        };
+        return send({ ...message }, 'messages');
     }
 }
