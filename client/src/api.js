@@ -24,13 +24,23 @@ function toURL(parameters){
 export function get(parameters=null, endpoint=''){
     const urlParameters = toURL(parameters);
     const requestUrl = `${HOST}${endpoint}${urlParameters}`;
-    return fetch(requestUrl, { 
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-        }
+    const request = new Promise((resolve, reject) => {
+        const decideByStatus = (res) => {
+            if ( 199 < res.status && 300 > res.status ) {
+                resolve(res);
+            } else {
+                reject(res);
+            }
+        };
+        fetch(requestUrl, { 
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        }).then(decideByStatus).catch(reject);
     });
+    return request;
 }
 
 export class MessageInput {

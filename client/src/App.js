@@ -29,13 +29,16 @@ class App extends Component {
     const app = this;
     const keys = this.account.getKeys();
     const keysLoad = Promise.all([keys.cypher.load(), keys.signer.load()])
-    keysLoad
-        .then((key) => {
-            app.openChat();    
-        })
-        .catch((notLoaded) => {
-            app.openSubscribe();
-        });
+    const userExists = this.account.load()
+    userExists.then((...data) => this.account.verify(...data)
+            .then((key) => {
+                console.log('verified', key);
+                app.openChat();    
+            })
+            .catch((notLoaded) => {
+                app.openSubscribe();
+            })
+        );
   }
   openSubscribe = () => {
     this.setState((state) => ({subscribed: false}));

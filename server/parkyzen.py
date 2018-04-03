@@ -2,6 +2,7 @@ from node import Node
 from node.server import app, NodeServerHandler
 from api.server import may_fail, InvalidResource, ResourceNotFound
 from block import Block, GenesisBlock
+from crypto import sha_of, load_publickey
 from os import environ
 
 
@@ -11,7 +12,6 @@ data = {
 }
 
 genesis_block = GenesisBlock(data)
-
 
 _plate_not_found = 'Plate not registered: {}'
 
@@ -42,14 +42,16 @@ class ParkyzenNodeServerHandler(NodeServerHandler):
         plates = params.get('plate', [])
         plate = plates[0] if len(plates) > 0 else None
         from_index = params.get('from_index', 0)
-        items =  self.server.messages_for(plate, from_index=from_index)
+        items = self.server.messages_for(plate, from_index=from_index)
         return 200, {'items': items}
 
     @app.when_post('/messages')
     @may_fail
     def new_message(self, params=None):
+        print('new message', params)
         plate = params.get('plate')
         recipient = params.get('to')
+        recipient = recipient if len(recipient) > 0 else None
         content = params.get('content')
         signature = params.get('signature')
         done = self.server.new_message(plate, content,
@@ -68,7 +70,6 @@ def find(fields, source):
         return target
     return None
 
-from crypto import sha_of, load_publickey
 
 class ParkyzenNode(Node):
 
@@ -86,8 +87,7 @@ class ParkyzenNode(Node):
             if register is not None:
                 if plate == register.get('plate'):
                     return register
-        return None
-    
+        raise ResourceNotFound(_plate_not_found.format(plate))
 
     def new_message(self, sender, content, recipient=None, signature=None):
         sender_register = self.find_user(sender)

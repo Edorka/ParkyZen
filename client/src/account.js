@@ -2,9 +2,27 @@ import {send, get} from './api.js';
 
 export class Account {
     constructor() {
-        this.plate = localStorage.getItem('plate');
         this.cypherKey = new CypherKey();
         this.signerKey = new SignerKey();
+    }
+    load() {
+        const plateLoad = new Promise((resolve, reject) => {
+            const plate = localStorage.getItem('plate');
+            if ( plate !== null ){ 
+                this.plate = plate;
+                resolve(plate);
+            } else {
+                const reason = 'no data found';
+                reject({reason});
+            }
+        });
+        return Promise.all([plateLoad,
+                            this.cypherKey.load(), 
+                            this.signerKey.load()]);
+    }
+    verify([plate, cypherKey, signerKey]) {
+        console.log('verify', plate);
+        return get({plate}, 'users');
     }
     getKeys() {
         return {
