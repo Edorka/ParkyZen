@@ -27,8 +27,6 @@ class App extends Component {
   }
   componentDidMount() {
     const app = this;
-    const keys = this.account.getKeys();
-    const keysLoad = Promise.all([keys.cypher.load(), keys.signer.load()])
     const userExists = this.account.load()
     userExists.then((...data) => this.account.verify(...data)
             .then((key) => {
@@ -49,6 +47,7 @@ class App extends Component {
   render() {
     const app = this;
     const { classes } = this.props;
+    console.log(app.account, app.account.plate);
     return (
       <div className={classes.root}>
         <div className="column">

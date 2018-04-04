@@ -32,7 +32,7 @@ class ParkyzenNodeServerHandler(NodeServerHandler):
     @may_fail
     def register_me(self, params=None):
         plate = params.get('plate')
-        key = params.get('pub_key')
+        key = params.get('pub_key_signer')
         is_new = self.server.new_user(plate, key)
         return 201 if is_new else 200, {'message': 'welcome'}
 

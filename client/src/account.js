@@ -2,6 +2,7 @@ import {send, get} from './api.js';
 
 export class Account {
     constructor() {
+        this.plate = '';
         this.cypherKey = new CypherKey();
         this.signerKey = new SignerKey();
     }

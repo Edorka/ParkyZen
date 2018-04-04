@@ -6,10 +6,20 @@ import React, { Component } from 'react';
 class SubscribeView extends Component {
   constructor(props) {
     super(props);
+    const account = this.props.account;
+    console.log('const', account);
+    console.log('plate', account.plate);
     this.state = {
-        plate: '',
+        plate: account.plate,
         valid: false
     };
+  }
+  componentWillReceiveProps(nextProps) {
+    const account = nextProps.account;
+    this.setState({
+        plate: account.plate,
+        valid: account.plate.length > 0
+    });
   }
   handleClick = () => {
     console.log('trying to subscribe', this);
@@ -27,6 +37,7 @@ class SubscribeView extends Component {
     });
   }
   render() {
+    console.log('cot', this.state.plate);
     return (
         <div className="column extended">
             <div className="row">
