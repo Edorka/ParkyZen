@@ -22,7 +22,7 @@ export class Account {
                             this.signerKey.load()]);
     }
     verify([plate, cypherKey, signerKey]) {
-        console.log('verify', plate);
+        console.log('verifying', plate);
         return get({plate}, 'users');
     }
     getKeys() {

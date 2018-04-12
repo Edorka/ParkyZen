@@ -32,8 +32,9 @@ class ParkyzenNodeServerHandler(NodeServerHandler):
     @may_fail
     def register_me(self, params=None):
         plate = params.get('plate')
-        key = params.get('pub_key_signer')
-        is_new = self.server.new_user(plate, key)
+        pub_key_signer = params.get('pub_key_signer')
+        pub_key_cypher = params.get('pub_key_cypher')
+        is_new = self.server.new_user(plate, pub_key_signer, pub_key_cypher)
         return 201 if is_new else 200, {'message': 'welcome'}
 
     @app.when_get('/messages')
@@ -41,15 +42,14 @@ class ParkyzenNodeServerHandler(NodeServerHandler):
     def list_messages(self, params=None):
         plates = params.get('plate', [])
         plate = plates[0] if len(plates) > 0 else None
-        from_index = params.get('from_index', 0)
+        [from_index] = params.get('from_index', [0])
         items = self.server.messages_for(plate, from_index=from_index)
         return 200, {'items': items}
 
     @app.when_post('/messages')
     @may_fail
     def new_message(self, params=None):
-        print('new message', params)
-        plate = params.get('plate')
+        plate = params.get('from')
         recipient = params.get('to')
         recipient = recipient if len(recipient) > 0 else None
         content = params.get('content')
@@ -84,19 +84,18 @@ class ParkyzenNode(Node):
     def find_user(self, plate):
         for block in self.chain:
             register = block.data.get('registered')
-            if register is not None:
-                if plate == register.get('plate'):
-                    return register
+            if register is None:
+                continue
+            if plate == register.get('plate'):
+                return register
         raise ResourceNotFound(_plate_not_found.format(plate))
 
     def new_message(self, sender, content, recipient=None, signature=None):
         sender_register = self.find_user(sender)
         if sender_register is None:
             raise ResourceNotFound(_plate_not_found.format(sender))
-        pub_key = load_publickey(sender_register.get('pub_key'))
-        content_hash = sha_of(content)
-        # print('signature', signature)
-        # print('content_hash', content_hash)
+        # pub_key = sender_register.get('pub_key_signer')
+        # content_hash = sha_of(content)
         if recipient is not None and self.find_user(recipient) is None:
             raise ResourceNotFound(_plate_not_found.format(recipient))
         message = {
@@ -126,21 +125,23 @@ class ParkyzenNode(Node):
             })
         return items
 
-    def new_user(self, plate, key):
+    def new_user(self, plate, pub_key_signer, pub_key_cypher):
         is_new = False
-        previous_user = self.find_user(plate)
-        if previous_user is not None:
-            if previous_user.get('pub_key') != key:
+        try:
+            previous_user = self.find_user(plate)
+            if previous_user.get('pub_key_signer') != pub_key_signer:
                 raise InvalidResource('{} already registered'.format(plate))
-        else:
-            data = {
-                'registered': {
-                    'plate': plate,
-                    'pub_key': key
-                }
+        except ResourceNotFound:
+            previous_user = None
+        data = {
+            'registered': {
+                'plate': plate,
+                'pub_key_signer': pub_key_signer,
+                'pub_key_cypher': pub_key_cypher
             }
-            self.insert_data(data)
-            is_new = True
+        }
+        self.insert_data(data)
+        is_new = True
         return is_new
 
 
@@ -149,5 +150,4 @@ try:
 except TypeError:
     port = 8080
 
-print('genesis b', genesis_block)
 ParkyzenNode(port=port, genesis_block=genesis_block).serve()

@@ -77,7 +77,7 @@ export class MessageOutput {
         const message = {
             'to': recipient,
             'content': content,
-            'from': this.plate
+            'from': this.account.plate,
         };
         return send({ ...message }, 'messages');
     }

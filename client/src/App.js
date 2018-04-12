@@ -28,15 +28,18 @@ class App extends Component {
   componentDidMount() {
     const app = this;
     const userExists = this.account.load()
-    userExists.then((...data) => this.account.verify(...data)
-            .then((key) => {
-                console.log('verified', key);
+    const verified = userExists.then((...data) => this.account.verify(...data));
+    verified.then(response => {
+                console.log('verified', response);
                 app.openChat();    
             })
-            .catch((notLoaded) => {
-                app.openSubscribe();
-            })
-        );
+            .catch(response => {
+                if ( response.status === 404 ) {
+                    app.openSubscribe();
+                } else {
+                    console.error(response);
+                }
+            });
   }
   openSubscribe = () => {
     this.setState((state) => ({subscribed: false}));
