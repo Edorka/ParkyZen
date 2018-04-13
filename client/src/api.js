@@ -50,12 +50,17 @@ export class MessageInput {
         this.index = 0;
         this.plate = account.plate;
     }
+    setIndex(index) {
+        this.index = index;
+    }
     load() {
+        const provider = this;
         const subscribers = this.subscribers;
         return get({'plate': this.plate, 'from_index': this.index}, 'messages')
             .then(res => res.json())
                 .then((result) => {
                     subscribers.forEach((subscriber) => subscriber(result));
+                    provider.start();
                 });
     }
     feed(callback) {
